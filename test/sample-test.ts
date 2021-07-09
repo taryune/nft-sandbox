@@ -1,13 +1,14 @@
 /* eslint-env mocha */
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
+
+// eslint-disable-next-line
 import { ERC721Royalities__factory } from '../typechain';
 
 describe('ERC721Royalities', () => {
   let contractAddress: string;
 
   beforeEach(async () => {
-    const [deployer] = await ethers.getSigners();
     const ERC721Royalities = await ethers.getContractFactory(
       'ERC721Royalities'
     );
@@ -19,7 +20,7 @@ describe('ERC721Royalities', () => {
   });
 
   describe('Mint', async () => {
-    it('mint successful', async function () {
+    it('mint successful', async () => {
       const [deployer] = await ethers.getSigners();
       const contract = new ERC721Royalities__factory(deployer).attach(
         contractAddress

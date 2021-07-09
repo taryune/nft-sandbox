@@ -17,5 +17,6 @@ plugins:
 rules:
   {
     'import/extentions': 'off',
+    'import/no-unresolved': 'off',
     'import/no-extraneous-dependencies': ['error', { 'devDependencies': true }],
   }
