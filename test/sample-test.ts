@@ -1,16 +1,33 @@
 /* eslint-env mocha */
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
+import { ERC721Royalities__factory } from '../typechain';
 
-describe('Greeter', () => {
-  it("Should return the new greeting once it's changed", async () => {
-    const Greeter = await ethers.getContractFactory('Greeter');
-    const greeter = await Greeter.deploy('Hello, world!');
+describe('ERC721Royalities', () => {
+  let contractAddress: string;
 
-    await greeter.deployed();
-    expect(await greeter.greet()).to.equal('Hello, world!');
+  beforeEach(async () => {
+    const [deployer] = await ethers.getSigners();
+    const ERC721Royalities = await ethers.getContractFactory(
+      'ERC721Royalities'
+    );
+    const name = 'Nameko';
+    const symbol = 'NMK';
+    const erc721Royalities = await ERC721Royalities.deploy(name, symbol);
+    await erc721Royalities.deployed();
+    contractAddress = erc721Royalities.address;
+  });
 
-    await greeter.setGreeting('Hola, mundo!');
-    expect(await greeter.greet()).to.equal('Hola, mundo!');
+  describe('Mint', async () => {
+    it('mint successful', async function () {
+      const [deployer] = await ethers.getSigners();
+      const contract = new ERC721Royalities__factory(deployer).attach(
+        contractAddress
+      );
+      await contract.mint(deployer.address, 'hogehoge');
+      expect(await contract.ownerOf(1)).to.be.equal(deployer.address);
+      expect(await contract.tokenURI(1)).to.be.equal('hogehoge');
+      expect(await contract.totalSupply()).to.be.eq(1);
+    });
   });
 });
