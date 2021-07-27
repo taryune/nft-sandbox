@@ -69,9 +69,17 @@ declare module 'hardhat/types/runtime' {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC165__factory>;
     getContractFactory(
-      name: 'ERC721Royalities',
+      name: 'ERC2981Royalties',
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ERC721Royalities__factory>;
+    ): Promise<Contracts.ERC2981Royalties__factory>;
+    getContractFactory(
+      name: 'ERC721WithRoyalities',
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ERC721WithRoyalities__factory>;
+    getContractFactory(
+      name: 'IERC2981Royalties',
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC2981Royalties__factory>;
 
     // default types
     getContractFactory(

@@ -15,7 +15,9 @@ export type { IERC721 } from './IERC721';
 export type { IERC721Receiver } from './IERC721Receiver';
 export type { ERC165 } from './ERC165';
 export type { IERC165 } from './IERC165';
-export type { ERC721Royalities } from './ERC721Royalities';
+export type { ERC2981Royalties } from './ERC2981Royalties';
+export type { ERC721WithRoyalities } from './ERC721WithRoyalities';
+export type { IERC2981Royalties } from './IERC2981Royalties';
 
 export { AccessControl__factory } from './factories/AccessControl__factory';
 export { IAccessControl__factory } from './factories/IAccessControl__factory';
@@ -31,4 +33,6 @@ export { IERC721__factory } from './factories/IERC721__factory';
 export { IERC721Receiver__factory } from './factories/IERC721Receiver__factory';
 export { ERC165__factory } from './factories/ERC165__factory';
 export { IERC165__factory } from './factories/IERC165__factory';
-export { ERC721Royalities__factory } from './factories/ERC721Royalities__factory';
+export { ERC2981Royalties__factory } from './factories/ERC2981Royalties__factory';
+export { ERC721WithRoyalities__factory } from './factories/ERC721WithRoyalities__factory';
+export { IERC2981Royalties__factory } from './factories/IERC2981Royalties__factory';

@@ -10,12 +10,15 @@ import '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 import '@openzeppelin/contracts/utils/Context.sol';
 
-contract ERC721Royalities is
+import './ERC2981Royalties.sol';
+
+contract ERC721WithRoyalities is
     Context,
     AccessControlEnumerable,
     ERC721Enumerable,
     ERC721Burnable,
-    ERC721URIStorage
+    ERC721URIStorage,
+    ERC2981Royalties
 {
     using Strings for uint256;
     using Counters for Counters.Counter;
@@ -43,7 +46,7 @@ contract ERC721Royalities is
     {
         require(
             hasRole(MINTER_ROLE, _msgSender()),
-            'ERC721Royalities: must have minter role to mint'
+            'ERC721WithRoyalities: must have minter role to mint'
         );
         _tokenIdTracker.increment();
         _safeMint(to, _tokenIdTracker.current());
@@ -68,6 +71,22 @@ contract ERC721Royalities is
         return super.tokenURI(tokenId);
     }
 
+    function setTokenRoyalty(
+        uint256 tokenId,
+        address recipient,
+        uint256 value
+    ) external {
+        require(
+            hasRole(MINTER_ROLE, _msgSender()),
+            'ERC721WithRoyalities: must have minter role to set royalty'
+        );
+        require(
+            tokenId <= _tokenIdTracker.current(),
+            'ERC721WithRoyalities: invalid token id'
+        );
+        _setTokenRoyalty(tokenId, recipient, value);
+    }
+
     function _beforeTokenTransfer(
         address from,
         address to,
@@ -80,7 +99,12 @@ contract ERC721Royalities is
         public
         view
         virtual
-        override(AccessControlEnumerable, ERC721, ERC721Enumerable)
+        override(
+            AccessControlEnumerable,
+            ERC721,
+            ERC721Enumerable,
+            ERC2981Royalties
+        )
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
