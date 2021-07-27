@@ -4,96 +4,85 @@ pragma solidity ^0.8.0;
 import 'hardhat/console.sol';
 import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol';
+import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol';
+import '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
+import '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
+import '@openzeppelin/contracts/utils/Context.sol';
 
-contract ERC721Royalities is ERC721Enumerable {
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
-
+contract ERC721Royalities is
+    Context,
+    AccessControlEnumerable,
+    ERC721Enumerable,
+    ERC721Burnable,
+    ERC721URIStorage
+{
     using Strings for uint256;
+    using Counters for Counters.Counter;
 
-    // Optional mapping for token URIs
-    mapping(uint256 => string) private _tokenURIs;
+    bytes32 public constant MINTER_ROLE = keccak256('MINTER_ROLE');
+    bytes32 public constant PAUSER_ROLE = keccak256('PAUSER_ROLE');
 
-    constructor(string memory name_, string memory symbol_)
-        ERC721(name_, symbol_)
-    {}
+    Counters.Counter private _tokenIdTracker;
 
-    /**
-     * @dev See {IERC721Metadata-tokenURI}.
-     */
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        virtual
-        override
-        returns (string memory)
-    {
-        require(
-            _exists(tokenId),
-            'ERC721URIStorage: URI query for nonexistent token'
-        );
+    string private _baseTokenURI;
 
-        string memory _tokenURI = _tokenURIs[tokenId];
-        string memory base = _baseURI();
-
-        // If there is no base URI, return the token URI.
-        if (bytes(base).length == 0) {
-            return _tokenURI;
-        }
-        // If both are set, concatenate the baseURI and tokenURI (via abi.encodePacked).
-        if (bytes(_tokenURI).length > 0) {
-            return string(abi.encodePacked(base, _tokenURI));
-        }
-
-        return super.tokenURI(tokenId);
-    }
-
-    /**
-     * @dev Sets `_tokenURI` as the tokenURI of `tokenId`.
-     *
-     * Requirements:
-     *
-     * - `tokenId` must exist.
-     */
-    function _setTokenURI(uint256 tokenId, string memory _tokenURI)
-        internal
-        virtual
-    {
-        require(
-            _exists(tokenId),
-            'ERC721URIStorage: URI set of nonexistent token'
-        );
-        _tokenURIs[tokenId] = _tokenURI;
-    }
-
-    /**
-     * @dev Destroys `tokenId`.
-     * The approval is cleared when the token is burned.
-     *
-     * Requirements:
-     *
-     * - `tokenId` must exist.
-     *
-     * Emits a {Transfer} event.
-     */
-    function _burn(uint256 tokenId) internal virtual override {
-        super._burn(tokenId);
-
-        if (bytes(_tokenURIs[tokenId]).length != 0) {
-            delete _tokenURIs[tokenId];
-        }
+    constructor(
+        string memory name,
+        string memory symbol,
+        string memory baseTokenURI
+    ) ERC721(name, symbol) {
+        _baseTokenURI = baseTokenURI;
+        _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        _setupRole(MINTER_ROLE, _msgSender());
     }
 
     function mint(address to, string memory _tokenURI)
         external
         returns (uint256)
     {
-        _tokenIds.increment();
+        require(
+            hasRole(MINTER_ROLE, _msgSender()),
+            'ERC721Royalities: must have minter role to mint'
+        );
+        _tokenIdTracker.increment();
+        _safeMint(to, _tokenIdTracker.current());
+        _setTokenURI(_tokenIdTracker.current(), _tokenURI);
+        return _tokenIdTracker.current();
+    }
 
-        uint256 tokenId = _tokenIds.current();
-        _mint(to, tokenId);
-        _setTokenURI(tokenId, _tokenURI);
-        return tokenId;
+    function _burn(uint256 tokenId)
+        internal
+        override(ERC721, ERC721URIStorage)
+    {
+        super._burn(tokenId);
+    }
+
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        virtual
+        override(ERC721, ERC721URIStorage)
+        returns (string memory)
+    {
+        return super.tokenURI(tokenId);
+    }
+
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal virtual override(ERC721, ERC721Enumerable) {
+        super._beforeTokenTransfer(from, to, tokenId);
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(AccessControlEnumerable, ERC721, ERC721Enumerable)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
     }
 }

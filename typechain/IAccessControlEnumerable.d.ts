@@ -18,25 +18,34 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-interface ERC165Interface extends ethers.utils.Interface {
+interface IAccessControlEnumerableInterface extends ethers.utils.Interface {
   functions: {
-    "supportsInterface(bytes4)": FunctionFragment;
+    "getRoleMember(bytes32,uint256)": FunctionFragment;
+    "getRoleMemberCount(bytes32)": FunctionFragment;
   };
 
   encodeFunctionData(
-    functionFragment: "supportsInterface",
+    functionFragment: "getRoleMember",
+    values: [BytesLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getRoleMemberCount",
     values: [BytesLike]
   ): string;
 
   decodeFunctionResult(
-    functionFragment: "supportsInterface",
+    functionFragment: "getRoleMember",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getRoleMemberCount",
     data: BytesLike
   ): Result;
 
   events: {};
 }
 
-export class ERC165 extends BaseContract {
+export class IAccessControlEnumerable extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -77,39 +86,69 @@ export class ERC165 extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: ERC165Interface;
+  interface: IAccessControlEnumerableInterface;
 
   functions: {
-    supportsInterface(
-      interfaceId: BytesLike,
+    getRoleMember(
+      role: BytesLike,
+      index: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<[boolean]>;
+    ): Promise<[string]>;
+
+    getRoleMemberCount(
+      role: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
   };
 
-  supportsInterface(
-    interfaceId: BytesLike,
+  getRoleMember(
+    role: BytesLike,
+    index: BigNumberish,
     overrides?: CallOverrides
-  ): Promise<boolean>;
+  ): Promise<string>;
+
+  getRoleMemberCount(
+    role: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   callStatic: {
-    supportsInterface(
-      interfaceId: BytesLike,
+    getRoleMember(
+      role: BytesLike,
+      index: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<boolean>;
+    ): Promise<string>;
+
+    getRoleMemberCount(
+      role: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
   };
 
   filters: {};
 
   estimateGas: {
-    supportsInterface(
-      interfaceId: BytesLike,
+    getRoleMember(
+      role: BytesLike,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getRoleMemberCount(
+      role: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    supportsInterface(
-      interfaceId: BytesLike,
+    getRoleMember(
+      role: BytesLike,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getRoleMemberCount(
+      role: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };

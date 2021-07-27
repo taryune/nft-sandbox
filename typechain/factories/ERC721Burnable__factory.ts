@@ -4,7 +4,10 @@
 
 import { Contract, Signer, utils } from "ethers";
 import { Provider } from "@ethersproject/providers";
-import type { IERC721, IERC721Interface } from "../IERC721";
+import type {
+  ERC721Burnable,
+  ERC721BurnableInterface,
+} from "../ERC721Burnable";
 
 const _abi = [
   {
@@ -112,7 +115,7 @@ const _abi = [
     outputs: [
       {
         internalType: "uint256",
-        name: "balance",
+        name: "",
         type: "uint256",
       },
     ],
@@ -127,11 +130,24 @@ const _abi = [
         type: "uint256",
       },
     ],
+    name: "burn",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
     name: "getApproved",
     outputs: [
       {
         internalType: "address",
-        name: "operator",
+        name: "",
         type: "address",
       },
     ],
@@ -163,6 +179,19 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "name",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "uint256",
@@ -174,7 +203,7 @@ const _abi = [
     outputs: [
       {
         internalType: "address",
-        name: "owner",
+        name: "",
         type: "address",
       },
     ],
@@ -223,7 +252,7 @@ const _abi = [
       },
       {
         internalType: "bytes",
-        name: "data",
+        name: "_data",
         type: "bytes",
       },
     ],
@@ -241,7 +270,7 @@ const _abi = [
       },
       {
         internalType: "bool",
-        name: "_approved",
+        name: "approved",
         type: "bool",
       },
     ],
@@ -264,6 +293,38 @@ const _abi = [
         internalType: "bool",
         name: "",
         type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "symbol",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
+    name: "tokenURI",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
       },
     ],
     stateMutability: "view",
@@ -294,15 +355,15 @@ const _abi = [
   },
 ];
 
-export class IERC721__factory {
+export class ERC721Burnable__factory {
   static readonly abi = _abi;
-  static createInterface(): IERC721Interface {
-    return new utils.Interface(_abi) as IERC721Interface;
+  static createInterface(): ERC721BurnableInterface {
+    return new utils.Interface(_abi) as ERC721BurnableInterface;
   }
   static connect(
     address: string,
     signerOrProvider: Signer | Provider
-  ): IERC721 {
-    return new Contract(address, _abi, signerOrProvider) as IERC721;
+  ): ERC721Burnable {
+    return new Contract(address, _abi, signerOrProvider) as ERC721Burnable;
   }
 }
