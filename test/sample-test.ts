@@ -34,7 +34,7 @@ describe('ERC721Royalities', () => {
       expect(await contract.balanceOf(deployer.address)).to.be.eq(1);
     });
     it('no minter role', async () => {
-      const [_, user] = await ethers.getSigners();
+      const [, user] = await ethers.getSigners();
       await expect(
         contract.connect(user).mint(user.address, 'fugafuga')
       ).to.revertedWith('ERC721Royalities: must have minter role to mint');
