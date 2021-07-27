@@ -12,33 +12,33 @@ import {
   BaseContract,
   ContractTransaction,
   CallOverrides,
-} from "ethers";
-import { BytesLike } from "@ethersproject/bytes";
-import { Listener, Provider } from "@ethersproject/providers";
-import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
-import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
+} from 'ethers';
+import { BytesLike } from '@ethersproject/bytes';
+import { Listener, Provider } from '@ethersproject/providers';
+import { FunctionFragment, EventFragment, Result } from '@ethersproject/abi';
+import { TypedEventFilter, TypedEvent, TypedListener } from './commons';
 
 interface IAccessControlEnumerableInterface extends ethers.utils.Interface {
   functions: {
-    "getRoleMember(bytes32,uint256)": FunctionFragment;
-    "getRoleMemberCount(bytes32)": FunctionFragment;
+    'getRoleMember(bytes32,uint256)': FunctionFragment;
+    'getRoleMemberCount(bytes32)': FunctionFragment;
   };
 
   encodeFunctionData(
-    functionFragment: "getRoleMember",
+    functionFragment: 'getRoleMember',
     values: [BytesLike, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "getRoleMemberCount",
+    functionFragment: 'getRoleMemberCount',
     values: [BytesLike]
   ): string;
 
   decodeFunctionResult(
-    functionFragment: "getRoleMember",
+    functionFragment: 'getRoleMember',
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getRoleMemberCount",
+    functionFragment: 'getRoleMemberCount',
     data: BytesLike
   ): Result;
 

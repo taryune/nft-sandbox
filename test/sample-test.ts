@@ -10,13 +10,11 @@ describe('ERC721Royalities', () => {
   let contract: ERC721Royalities;
 
   beforeEach(async () => {
-    const ERC721Royalities = await ethers.getContractFactory(
-      'ERC721Royalities'
-    );
+    const ContractFactory = await ethers.getContractFactory('ERC721Royalities');
     const name = 'Nameko';
     const symbol = 'NMK';
     const baseTokenURI = 'http://localhost:3000/';
-    const erc721Royalities = await ERC721Royalities.deploy(
+    const erc721Royalities = await ContractFactory.deploy(
       name,
       symbol,
       baseTokenURI

@@ -2,56 +2,56 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Contract, Signer, utils } from "ethers";
-import { Provider } from "@ethersproject/providers";
+import { Contract, Signer, utils } from 'ethers';
+import { Provider } from '@ethersproject/providers';
 import type {
   IAccessControlEnumerable,
   IAccessControlEnumerableInterface,
-} from "../IAccessControlEnumerable";
+} from '../IAccessControlEnumerable';
 
 const _abi = [
   {
     inputs: [
       {
-        internalType: "bytes32",
-        name: "role",
-        type: "bytes32",
+        internalType: 'bytes32',
+        name: 'role',
+        type: 'bytes32',
       },
       {
-        internalType: "uint256",
-        name: "index",
-        type: "uint256",
+        internalType: 'uint256',
+        name: 'index',
+        type: 'uint256',
       },
     ],
-    name: "getRoleMember",
+    name: 'getRoleMember',
     outputs: [
       {
-        internalType: "address",
-        name: "",
-        type: "address",
+        internalType: 'address',
+        name: '',
+        type: 'address',
       },
     ],
-    stateMutability: "view",
-    type: "function",
+    stateMutability: 'view',
+    type: 'function',
   },
   {
     inputs: [
       {
-        internalType: "bytes32",
-        name: "role",
-        type: "bytes32",
+        internalType: 'bytes32',
+        name: 'role',
+        type: 'bytes32',
       },
     ],
-    name: "getRoleMemberCount",
+    name: 'getRoleMemberCount',
     outputs: [
       {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
       },
     ],
-    stateMutability: "view",
-    type: "function",
+    stateMutability: 'view',
+    type: 'function',
   },
 ];
 
