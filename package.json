@@ -12,11 +12,13 @@
     "clean": "npx hardhat clean",
     "compile": "npx hardhat compile",
     "test": "npx hardhat test",
-    "lint": "npx eslint \"**/*.{js,ts}\" --quiet --fix",
-    "solhint": "solhint \"contracts/**/*.sol\"",
-    "format": "npx prettier -w \"contracts/**/*.sol\"",
-    "solformat": "npx prettier -w \"**/*.{ts, js, yml, json}\"",
-    "fix": "yarn lint & yarn solhint & yarn solformat & yarn format"
+    "lint-ts": "npx eslint \"**/*.{js,ts}\" --quiet --fix",
+    "lint-sol": "solhint \"contracts/**/*.sol\"",
+    "format-ts": "npx prettier -w \"**/*.{ts, js, yml, json}\"",
+    "format-sol": "npx prettier -w \"contracts/**/*.sol\"",
+    "fix-ts": "yarn lint-ts && yarn format-ts",
+    "fix-sol": "yarn lint-sol && yarn format-sol",
+    "fix": "yarn fix-ts && yarn fix-sol"
   },
   "author": "",
   "license": "ISC",
