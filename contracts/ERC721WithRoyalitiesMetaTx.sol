@@ -6,13 +6,13 @@ import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
+import '@openzeppelin/contracts/metatx/MinimalForwarder.sol';
 import '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 import '@openzeppelin/contracts/utils/Context.sol';
 
 import './ERC2981Royalties.sol';
 import './ERC2771Context.sol';
-import './ContextMixin.sol';
 
 contract ERC721WithRoyalitiesMetaTx is
     Context,
@@ -22,8 +22,7 @@ contract ERC721WithRoyalitiesMetaTx is
     ERC721Pausable,
     ERC721URIStorage,
     ERC2981Royalties,
-    ERC2771Context,
-    ContextMixin
+    ERC2771Context
 {
     using Strings for uint256;
     using Counters for Counters.Counter;
@@ -39,8 +38,8 @@ contract ERC721WithRoyalitiesMetaTx is
         string memory name,
         string memory symbol,
         string memory baseTokenURI,
-        address trustedFowarder
-    ) ERC721(name, symbol) ERC2771Context(trustedFowarder) {
+        MinimalForwarder fowarder
+    ) ERC721(name, symbol) ERC2771Context(address(fowarder)) {
         _baseTokenURI = baseTokenURI;
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
         _setupRole(MINTER_ROLE, _msgSender());
@@ -139,7 +138,7 @@ contract ERC721WithRoyalitiesMetaTx is
         override(Context, ERC2771Context)
         returns (address sender)
     {
-        return ContextMixin.msgSender();
+        return ERC2771Context._msgSender();
     }
 
     function _msgData()
