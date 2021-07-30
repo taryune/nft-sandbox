@@ -11,6 +11,40 @@ import {
   MinimalForwarder,
 } from '../typechain';
 
+const createTypedData = (chainId: number, ForwarderAddress: string) => {
+  const EIP712DomainType = [
+    { name: 'name', type: 'string' },
+    { name: 'version', type: 'string' },
+    { name: 'chainId', type: 'uint256' },
+    { name: 'verifyingContract', type: 'address' },
+  ];
+
+  const ForwardRequestType = [
+    { name: 'from', type: 'address' },
+    { name: 'to', type: 'address' },
+    { name: 'value', type: 'uint256' },
+    { name: 'gas', type: 'uint256' },
+    { name: 'nonce', type: 'uint256' },
+    { name: 'data', type: 'bytes' },
+  ];
+
+  const TypedData = {
+    domain: {
+      name: 'MinimalForwarder',
+      version: '1',
+      chainId,
+      verifyingContract: ForwarderAddress,
+    },
+    primaryType: 'ForwardRequest',
+    types: {
+      EIP712Domain: EIP712DomainType,
+      ForwardRequest: ForwardRequestType,
+    },
+    message: {},
+  };
+  return TypedData;
+};
+
 describe('ERC721RoyalitiesMetaTx', () => {
   let contract: ERC721WithRoyalitiesMetaTx;
   let forwarder: MinimalForwarder;
@@ -94,13 +128,19 @@ describe('ERC721RoyalitiesMetaTx', () => {
 
       const request = {
         from: signers.user.address,
-        to: forwarder.address,
+        to: contract.address,
         value: 0,
         gas: 1e6,
         nonce,
         data,
       };
-      const signature = await signers.user.signTransaction(request);
+      const { chainId } = await ethers.provider.getNetwork();
+      const TypedData = createTypedData(chainId, forwarder.address);
+      const toSign = { ...TypedData, message: request };
+      const signature = await ethers.provider.send('eth_signTypedData_v4', [
+        signers.user.address,
+        JSON.stringify(toSign),
+      ]);
       await forwarder.verify(request, signature);
       await forwarder.execute(request, signature);
 
