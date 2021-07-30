@@ -1,7 +1,8 @@
 /* eslint-env mocha */
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-
+// eslint-disable-next-line
+import { signTypedData_v4, recoverTypedSignature_v4 } from 'eth-sig-util';
 import {
   // eslint-disable-next-line
   ERC721WithRoyalitiesMetaTx__factory,
@@ -11,36 +12,49 @@ import {
   MinimalForwarder,
 } from '../typechain';
 
-const createTypedData = (chainId: number, ForwarderAddress: string) => {
-  const EIP712DomainType = [
-    { name: 'name', type: 'string' },
-    { name: 'version', type: 'string' },
-    { name: 'chainId', type: 'uint256' },
-    { name: 'verifyingContract', type: 'address' },
-  ];
+const EIP712DomainType = [
+  { name: 'name', type: 'string' },
+  { name: 'version', type: 'string' },
+  { name: 'chainId', type: 'uint256' },
+  { name: 'verifyingContract', type: 'address' },
+];
 
-  const ForwardRequestType = [
-    { name: 'from', type: 'address' },
-    { name: 'to', type: 'address' },
-    { name: 'value', type: 'uint256' },
-    { name: 'gas', type: 'uint256' },
-    { name: 'nonce', type: 'uint256' },
-    { name: 'data', type: 'bytes' },
-  ];
+const ForwardRequestType = [
+  { name: 'from', type: 'address' },
+  { name: 'to', type: 'address' },
+  { name: 'value', type: 'uint256' },
+  { name: 'gas', type: 'uint256' },
+  { name: 'nonce', type: 'uint256' },
+  { name: 'data', type: 'bytes' },
+];
 
+type Message = {
+  from: string;
+  to: string;
+  value: number;
+  gas: number;
+  nonce: number;
+  data: string;
+};
+
+const createTypedData = (
+  chainId: number,
+  ForwarderAddress: string,
+  message: Message
+) => {
   const TypedData = {
+    primaryType: 'ForwardRequest' as const,
+    types: {
+      EIP712Domain: EIP712DomainType,
+      ForwardRequest: ForwardRequestType,
+    },
     domain: {
       name: 'MinimalForwarder',
       version: '1',
       chainId,
       verifyingContract: ForwarderAddress,
     },
-    primaryType: 'ForwardRequest',
-    types: {
-      EIP712Domain: EIP712DomainType,
-      ForwardRequest: ForwardRequestType,
-    },
-    message: {},
+    message,
   };
   return TypedData;
 };
@@ -51,8 +65,11 @@ describe('ERC721RoyalitiesMetaTx', () => {
   let signers: any;
 
   beforeEach(async () => {
-    const [deployer, user, random] = await ethers.getSigners();
-    signers = { deployer, user, random };
+    const [deployer] = await ethers.getSigners();
+    const privateKey =
+      '0x9729e15de7c9c0ec06ebc2ab7f4dcf796f24d5add48ddf3c424a8019e9061ad8';
+    const user = new ethers.Wallet(privateKey, ethers.provider);
+    signers = { deployer, user };
     const name = 'Nameko';
     const symbol = 'NMK';
     const baseTokenURI = 'http://localhost:3000/';
@@ -117,35 +134,44 @@ describe('ERC721RoyalitiesMetaTx', () => {
         1
       );
 
-      const beforeBalance = await signers.user.getBalance();
-
+      const beforeUserBalance = await signers.user.getBalance();
+      const beforeDeployerBalance = await signers.deployer.getBalance();
       const nonce = await forwarder.getNonce(signers.user.address);
+      const { chainId } = await signers.user.provider.getNetwork();
       const data = contract.interface.encodeFunctionData('transferFrom', [
         signers.user.address,
         signers.deployer.address,
         1,
       ]);
-
       const request = {
         from: signers.user.address,
         to: contract.address,
         value: 0,
         gas: 1e6,
-        nonce,
+        nonce: nonce.toNumber(),
         data,
       };
-      const { chainId } = await ethers.provider.getNetwork();
-      const TypedData = createTypedData(chainId, forwarder.address);
-      const toSign = { ...TypedData, message: request };
-      const signature = await ethers.provider.send('eth_signTypedData_v4', [
-        signers.user.address,
-        JSON.stringify(toSign),
-      ]);
-      await forwarder.verify(request, signature);
-      await forwarder.execute(request, signature);
+      const TypedData = createTypedData(chainId, forwarder.address, request);
+      const privateKey = Buffer.from(signers.user.privateKey.slice(2), 'hex');
+      const signature = signTypedData_v4(privateKey, {
+        data: TypedData,
+      });
+      console.log(signature);
+      const recovered = recoverTypedSignature_v4({
+        data: TypedData,
+        sig: signature,
+      });
+      console.log(recovered);
 
-      const afterBalance = await signers.user.getBalance();
-      expect(afterBalance).to.be.equal(beforeBalance);
+      await forwarder.verify(request, signature);
+      const signer = await forwarder.getSigner(request, signature);
+      console.log(signer);
+      await forwarder.execute(request, signature);
+      const afterUserBalance = await signers.user.getBalance();
+      const afterDeployerBalance = await signers.deployer.getBalance();
+      expect(await contract.ownerOf(1)).to.be.equal(signers.deployer.address);
+      expect(afterUserBalance).to.be.equal(beforeUserBalance);
+      expect(afterDeployerBalance).to.be.below(beforeDeployerBalance);
     });
 
     it('transfer of token that is not own', async () => {

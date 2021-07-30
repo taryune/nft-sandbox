@@ -23,6 +23,7 @@ interface MinimalForwarderInterface extends ethers.utils.Interface {
   functions: {
     'execute(tuple,bytes)': FunctionFragment;
     'getNonce(address)': FunctionFragment;
+    'getSigner(tuple,bytes)': FunctionFragment;
     'verify(tuple,bytes)': FunctionFragment;
   };
 
@@ -42,6 +43,20 @@ interface MinimalForwarderInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: 'getNonce', values: [string]): string;
   encodeFunctionData(
+    functionFragment: 'getSigner',
+    values: [
+      {
+        from: string;
+        to: string;
+        value: BigNumberish;
+        gas: BigNumberish;
+        nonce: BigNumberish;
+        data: BytesLike;
+      },
+      BytesLike
+    ]
+  ): string;
+  encodeFunctionData(
     functionFragment: 'verify',
     values: [
       {
@@ -58,6 +73,7 @@ interface MinimalForwarderInterface extends ethers.utils.Interface {
 
   decodeFunctionResult(functionFragment: 'execute', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'getNonce', data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: 'getSigner', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'verify', data: BytesLike): Result;
 
   events: {};
@@ -122,6 +138,19 @@ export class MinimalForwarder extends BaseContract {
 
     getNonce(from: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    getSigner(
+      req: {
+        from: string;
+        to: string;
+        value: BigNumberish;
+        gas: BigNumberish;
+        nonce: BigNumberish;
+        data: BytesLike;
+      },
+      signature: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[string, string]>;
+
     verify(
       req: {
         from: string;
@@ -151,6 +180,19 @@ export class MinimalForwarder extends BaseContract {
 
   getNonce(from: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+  getSigner(
+    req: {
+      from: string;
+      to: string;
+      value: BigNumberish;
+      gas: BigNumberish;
+      nonce: BigNumberish;
+      data: BytesLike;
+    },
+    signature: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<[string, string]>;
+
   verify(
     req: {
       from: string;
@@ -179,6 +221,19 @@ export class MinimalForwarder extends BaseContract {
     ): Promise<[boolean, string]>;
 
     getNonce(from: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    getSigner(
+      req: {
+        from: string;
+        to: string;
+        value: BigNumberish;
+        gas: BigNumberish;
+        nonce: BigNumberish;
+        data: BytesLike;
+      },
+      signature: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[string, string]>;
 
     verify(
       req: {
@@ -212,6 +267,19 @@ export class MinimalForwarder extends BaseContract {
 
     getNonce(from: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+    getSigner(
+      req: {
+        from: string;
+        to: string;
+        value: BigNumberish;
+        gas: BigNumberish;
+        nonce: BigNumberish;
+        data: BytesLike;
+      },
+      signature: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     verify(
       req: {
         from: string;
@@ -242,6 +310,19 @@ export class MinimalForwarder extends BaseContract {
 
     getNonce(
       from: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getSigner(
+      req: {
+        from: string;
+        to: string;
+        value: BigNumberish;
+        gas: BigNumberish;
+        nonce: BigNumberish;
+        data: BytesLike;
+      },
+      signature: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
