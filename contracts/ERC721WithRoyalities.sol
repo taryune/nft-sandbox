@@ -40,6 +40,7 @@ contract ERC721WithRoyalities is
         _baseTokenURI = baseTokenURI;
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
         _setupRole(MINTER_ROLE, _msgSender());
+        _setupRole(PAUSER_ROLE, _msgSender());
     }
 
     function mint(address to, string memory _tokenURI)
@@ -87,6 +88,22 @@ contract ERC721WithRoyalities is
             'ERC721WithRoyalities: invalid token id'
         );
         _setTokenRoyalty(tokenId, recipient, value);
+    }
+
+    function pause() public virtual {
+        require(
+            hasRole(PAUSER_ROLE, _msgSender()),
+            'ERC721WithRoyalities: must have pauser role to pause'
+        );
+        _pause();
+    }
+
+    function unpause() public virtual {
+        require(
+            hasRole(PAUSER_ROLE, _msgSender()),
+            'ERC721WithRoyalities: must have pauser role to unpause'
+        );
+        _unpause();
     }
 
     function _beforeTokenTransfer(

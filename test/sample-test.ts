@@ -104,4 +104,36 @@ describe('ERC721Royalities', () => {
       ).to.revertedWith('ERC721WithRoyalities: invalid token id');
     });
   });
+  describe('Pause', async () => {
+    it('successful', async () => {
+      const [deployer] = await ethers.getSigners();
+      await contract.pause();
+      await expect(contract.mint(deployer.address, 'hoge')).to.revertedWith(
+        'ERC721Pausable: token transfer while paused'
+      );
+    });
+    it('must have pauser role', async () => {
+      const [, user] = await ethers.getSigners();
+      await expect(contract.connect(user).pause()).to.revertedWith(
+        'ERC721WithRoyalities: must have pauser role to pause'
+      );
+    });
+  });
+  describe('Unpause', async () => {
+    beforeEach(async () => {
+      await contract.pause();
+    });
+    it('successful', async () => {
+      const [deployer] = await ethers.getSigners();
+      await contract.unpause();
+      await contract.mint(deployer.address, 'hogehoge');
+      expect(await contract.ownerOf(1)).to.be.equal(deployer.address);
+    });
+    it('must have pauser role', async () => {
+      const [, user] = await ethers.getSigners();
+      await expect(contract.connect(user).unpause()).to.revertedWith(
+        'ERC721WithRoyalities: must have pauser role to unpause'
+      );
+    });
+  });
 });
