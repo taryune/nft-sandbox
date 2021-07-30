@@ -11,15 +11,19 @@ import '@openzeppelin/contracts/utils/Counters.sol';
 import '@openzeppelin/contracts/utils/Context.sol';
 
 import './ERC2981Royalties.sol';
+import './ERC2771Context.sol';
+import './ContextMixin.sol';
 
-contract ERC721WithRoyalities is
+contract ERC721WithRoyalitiesMetaTx is
     Context,
     AccessControlEnumerable,
     ERC721Enumerable,
     ERC721Burnable,
     ERC721Pausable,
     ERC721URIStorage,
-    ERC2981Royalties
+    ERC2981Royalties,
+    ERC2771Context,
+    ContextMixin
 {
     using Strings for uint256;
     using Counters for Counters.Counter;
@@ -34,8 +38,9 @@ contract ERC721WithRoyalities is
     constructor(
         string memory name,
         string memory symbol,
-        string memory baseTokenURI
-    ) ERC721(name, symbol) {
+        string memory baseTokenURI,
+        address trustedFowarder
+    ) ERC721(name, symbol) ERC2771Context(trustedFowarder) {
         _baseTokenURI = baseTokenURI;
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
         _setupRole(MINTER_ROLE, _msgSender());
@@ -126,5 +131,23 @@ contract ERC721WithRoyalities is
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
+    }
+
+    function _msgSender()
+        internal
+        view
+        override(Context, ERC2771Context)
+        returns (address sender)
+    {
+        return ContextMixin.msgSender();
+    }
+
+    function _msgData()
+        internal
+        view
+        override(Context, ERC2771Context)
+        returns (bytes calldata)
+    {
+        return ERC2771Context._msgData();
     }
 }

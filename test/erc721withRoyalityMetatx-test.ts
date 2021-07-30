@@ -4,30 +4,32 @@ import { expect } from 'chai';
 
 import {
   // eslint-disable-next-line
-  ERC721WithRoyalities__factory,
-  ERC721WithRoyalities,
+  ERC721WithRoyalitiesMetaTx__factory,
+  ERC721WithRoyalitiesMetaTx,
 } from '../typechain';
 
-describe('ERC721Royalities', () => {
+describe('ERC721RoyalitiesMetaTx', () => {
   let contractAddress: string;
-  let contract: ERC721WithRoyalities;
+  let contract: ERC721WithRoyalitiesMetaTx;
 
   beforeEach(async () => {
     const ContractFactory = await ethers.getContractFactory(
-      'ERC721WithRoyalities'
+      'ERC721WithRoyalitiesMetaTx'
     );
+    const [deployer] = await ethers.getSigners();
     const name = 'Nameko';
     const symbol = 'NMK';
     const baseTokenURI = 'http://localhost:3000/';
-    const erc721WithRoyalities = await ContractFactory.deploy(
+    const trustedFowarder = deployer.address;
+    const erc721WithRoyalitiesMetaTx = await ContractFactory.deploy(
       name,
       symbol,
-      baseTokenURI
+      baseTokenURI,
+      trustedFowarder
     );
-    await erc721WithRoyalities.deployed();
-    contractAddress = erc721WithRoyalities.address;
-    const [deployer] = await ethers.getSigners();
-    contract = new ERC721WithRoyalities__factory(deployer).attach(
+    await erc721WithRoyalitiesMetaTx.deployed();
+    contractAddress = erc721WithRoyalitiesMetaTx.address;
+    contract = new ERC721WithRoyalitiesMetaTx__factory(deployer).attach(
       contractAddress
     );
   });
@@ -52,10 +54,10 @@ describe('ERC721Royalities', () => {
     beforeEach(async () => {
       const [deployer] = await ethers.getSigners();
       await contract.mint(deployer.address, 'hogehoge');
+      expect(await contract.ownerOf(1)).to.be.equal(deployer.address);
     });
     it('successful', async () => {
       const [deployer, user] = await ethers.getSigners();
-      expect(await contract.ownerOf(1)).to.be.equal(deployer.address);
       await contract.transferFrom(deployer.address, user.address, 1);
       expect(await contract.ownerOf(1)).to.be.equal(user.address);
     });
@@ -65,6 +67,38 @@ describe('ERC721Royalities', () => {
       await expect(
         contract.transferFrom(user.address, deployer.address, 1)
       ).to.revertedWith('ERC721: transfer of token that is not own');
+    });
+  });
+
+  describe('Burn', async () => {
+    beforeEach(async () => {
+      const [deployer] = await ethers.getSigners();
+      await contract.mint(deployer.address, 'hogehoge');
+      expect(await contract.ownerOf(1)).to.be.equal(deployer.address);
+    });
+    it('successful', async () => {
+      const [deployer] = await ethers.getSigners();
+      await contract.burn(1);
+      expect(await contract.balanceOf(deployer.address)).to.be.equal(0);
+      await expect(contract.ownerOf(1)).to.revertedWith(
+        'ERC721: owner query for nonexistent token'
+      );
+    });
+    it('transfer and burn', async () => {
+      const [deployer, user] = await ethers.getSigners();
+      await contract.transferFrom(deployer.address, user.address, 1);
+      expect(await contract.balanceOf(user.address)).to.be.equal(1);
+      await contract.connect(user).burn(1);
+      await expect(contract.ownerOf(1)).to.revertedWith(
+        'ERC721: owner query for nonexistent token'
+      );
+    });
+
+    it('caller is not owner', async () => {
+      const [, user] = await ethers.getSigners();
+      await expect(contract.connect(user).burn(1)).to.revertedWith(
+        'ERC721Burnable: caller is not owner nor approved'
+      );
     });
   });
 

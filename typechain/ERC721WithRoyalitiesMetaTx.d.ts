@@ -19,7 +19,7 @@ import { Listener, Provider } from '@ethersproject/providers';
 import { FunctionFragment, EventFragment, Result } from '@ethersproject/abi';
 import { TypedEventFilter, TypedEvent, TypedListener } from './commons';
 
-interface ERC721RoyalitiesInterface extends ethers.utils.Interface {
+interface ERC721WithRoyalitiesMetaTxInterface extends ethers.utils.Interface {
   functions: {
     'DEFAULT_ADMIN_ROLE()': FunctionFragment;
     'MINTER_ROLE()': FunctionFragment;
@@ -34,13 +34,18 @@ interface ERC721RoyalitiesInterface extends ethers.utils.Interface {
     'grantRole(bytes32,address)': FunctionFragment;
     'hasRole(bytes32,address)': FunctionFragment;
     'isApprovedForAll(address,address)': FunctionFragment;
+    'isTrustedForwarder(address)': FunctionFragment;
     'mint(address,string)': FunctionFragment;
     'name()': FunctionFragment;
     'ownerOf(uint256)': FunctionFragment;
+    'pause()': FunctionFragment;
+    'paused()': FunctionFragment;
     'renounceRole(bytes32,address)': FunctionFragment;
     'revokeRole(bytes32,address)': FunctionFragment;
+    'royaltyInfo(uint256,uint256)': FunctionFragment;
     'safeTransferFrom(address,address,uint256)': FunctionFragment;
     'setApprovalForAll(address,bool)': FunctionFragment;
+    'setTokenRoyalty(uint256,address,uint256)': FunctionFragment;
     'supportsInterface(bytes4)': FunctionFragment;
     'symbol()': FunctionFragment;
     'tokenByIndex(uint256)': FunctionFragment;
@@ -48,6 +53,7 @@ interface ERC721RoyalitiesInterface extends ethers.utils.Interface {
     'tokenURI(uint256)': FunctionFragment;
     'totalSupply()': FunctionFragment;
     'transferFrom(address,address,uint256)': FunctionFragment;
+    'unpause()': FunctionFragment;
   };
 
   encodeFunctionData(
@@ -97,6 +103,10 @@ interface ERC721RoyalitiesInterface extends ethers.utils.Interface {
     values: [string, string]
   ): string;
   encodeFunctionData(
+    functionFragment: 'isTrustedForwarder',
+    values: [string]
+  ): string;
+  encodeFunctionData(
     functionFragment: 'mint',
     values: [string, string]
   ): string;
@@ -105,6 +115,8 @@ interface ERC721RoyalitiesInterface extends ethers.utils.Interface {
     functionFragment: 'ownerOf',
     values: [BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: 'pause', values?: undefined): string;
+  encodeFunctionData(functionFragment: 'paused', values?: undefined): string;
   encodeFunctionData(
     functionFragment: 'renounceRole',
     values: [BytesLike, string]
@@ -114,12 +126,20 @@ interface ERC721RoyalitiesInterface extends ethers.utils.Interface {
     values: [BytesLike, string]
   ): string;
   encodeFunctionData(
+    functionFragment: 'royaltyInfo',
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: 'safeTransferFrom',
     values: [string, string, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: 'setApprovalForAll',
     values: [string, boolean]
+  ): string;
+  encodeFunctionData(
+    functionFragment: 'setTokenRoyalty',
+    values: [BigNumberish, string, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: 'supportsInterface',
@@ -146,6 +166,7 @@ interface ERC721RoyalitiesInterface extends ethers.utils.Interface {
     functionFragment: 'transferFrom',
     values: [string, string, BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: 'unpause', values?: undefined): string;
 
   decodeFunctionResult(
     functionFragment: 'DEFAULT_ADMIN_ROLE',
@@ -184,20 +205,34 @@ interface ERC721RoyalitiesInterface extends ethers.utils.Interface {
     functionFragment: 'isApprovedForAll',
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: 'isTrustedForwarder',
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: 'mint', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'name', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'ownerOf', data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: 'pause', data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: 'paused', data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: 'renounceRole',
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: 'revokeRole', data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: 'royaltyInfo',
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: 'safeTransferFrom',
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: 'setApprovalForAll',
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: 'setTokenRoyalty',
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -222,25 +257,30 @@ interface ERC721RoyalitiesInterface extends ethers.utils.Interface {
     functionFragment: 'transferFrom',
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: 'unpause', data: BytesLike): Result;
 
   events: {
     'Approval(address,address,uint256)': EventFragment;
     'ApprovalForAll(address,address,bool)': EventFragment;
+    'Paused(address)': EventFragment;
     'RoleAdminChanged(bytes32,bytes32,bytes32)': EventFragment;
     'RoleGranted(bytes32,address,address)': EventFragment;
     'RoleRevoked(bytes32,address,address)': EventFragment;
     'Transfer(address,address,uint256)': EventFragment;
+    'Unpaused(address)': EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: 'Approval'): EventFragment;
   getEvent(nameOrSignatureOrTopic: 'ApprovalForAll'): EventFragment;
+  getEvent(nameOrSignatureOrTopic: 'Paused'): EventFragment;
   getEvent(nameOrSignatureOrTopic: 'RoleAdminChanged'): EventFragment;
   getEvent(nameOrSignatureOrTopic: 'RoleGranted'): EventFragment;
   getEvent(nameOrSignatureOrTopic: 'RoleRevoked'): EventFragment;
   getEvent(nameOrSignatureOrTopic: 'Transfer'): EventFragment;
+  getEvent(nameOrSignatureOrTopic: 'Unpaused'): EventFragment;
 }
 
-export class ERC721Royalities extends BaseContract {
+export class ERC721WithRoyalitiesMetaTx extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -281,7 +321,7 @@ export class ERC721Royalities extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: ERC721RoyalitiesInterface;
+  interface: ERC721WithRoyalitiesMetaTxInterface;
 
   functions: {
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<[string]>;
@@ -339,6 +379,11 @@ export class ERC721Royalities extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
+    isTrustedForwarder(
+      forwarder: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     mint(
       to: string,
       _tokenURI: string,
@@ -352,6 +397,12 @@ export class ERC721Royalities extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
+    pause(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    paused(overrides?: CallOverrides): Promise<[boolean]>;
+
     renounceRole(
       role: BytesLike,
       account: string,
@@ -363,6 +414,14 @@ export class ERC721Royalities extends BaseContract {
       account: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    royaltyInfo(
+      tokenId: BigNumberish,
+      value: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [string, BigNumber] & { receiver: string; royaltyAmount: BigNumber }
+    >;
 
     'safeTransferFrom(address,address,uint256)'(
       from: string,
@@ -382,6 +441,13 @@ export class ERC721Royalities extends BaseContract {
     setApprovalForAll(
       operator: string,
       approved: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setTokenRoyalty(
+      tokenId: BigNumberish,
+      recipient: string,
+      value: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -414,6 +480,10 @@ export class ERC721Royalities extends BaseContract {
       from: string,
       to: string,
       tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    unpause(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
@@ -473,6 +543,11 @@ export class ERC721Royalities extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
+  isTrustedForwarder(
+    forwarder: string,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
   mint(
     to: string,
     _tokenURI: string,
@@ -482,6 +557,12 @@ export class ERC721Royalities extends BaseContract {
   name(overrides?: CallOverrides): Promise<string>;
 
   ownerOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
+  pause(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  paused(overrides?: CallOverrides): Promise<boolean>;
 
   renounceRole(
     role: BytesLike,
@@ -494,6 +575,14 @@ export class ERC721Royalities extends BaseContract {
     account: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  royaltyInfo(
+    tokenId: BigNumberish,
+    value: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    [string, BigNumber] & { receiver: string; royaltyAmount: BigNumber }
+  >;
 
   'safeTransferFrom(address,address,uint256)'(
     from: string,
@@ -513,6 +602,13 @@ export class ERC721Royalities extends BaseContract {
   setApprovalForAll(
     operator: string,
     approved: boolean,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setTokenRoyalty(
+    tokenId: BigNumberish,
+    recipient: string,
+    value: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -542,6 +638,10 @@ export class ERC721Royalities extends BaseContract {
     from: string,
     to: string,
     tokenId: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  unpause(
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -598,6 +698,11 @@ export class ERC721Royalities extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
+    isTrustedForwarder(
+      forwarder: string,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
     mint(
       to: string,
       _tokenURI: string,
@@ -607,6 +712,10 @@ export class ERC721Royalities extends BaseContract {
     name(overrides?: CallOverrides): Promise<string>;
 
     ownerOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
+    pause(overrides?: CallOverrides): Promise<void>;
+
+    paused(overrides?: CallOverrides): Promise<boolean>;
 
     renounceRole(
       role: BytesLike,
@@ -619,6 +728,14 @@ export class ERC721Royalities extends BaseContract {
       account: string,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    royaltyInfo(
+      tokenId: BigNumberish,
+      value: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [string, BigNumber] & { receiver: string; royaltyAmount: BigNumber }
+    >;
 
     'safeTransferFrom(address,address,uint256)'(
       from: string,
@@ -638,6 +755,13 @@ export class ERC721Royalities extends BaseContract {
     setApprovalForAll(
       operator: string,
       approved: boolean,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setTokenRoyalty(
+      tokenId: BigNumberish,
+      recipient: string,
+      value: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -669,6 +793,8 @@ export class ERC721Royalities extends BaseContract {
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    unpause(overrides?: CallOverrides): Promise<void>;
   };
 
   filters: {
@@ -689,6 +815,8 @@ export class ERC721Royalities extends BaseContract {
       [string, string, boolean],
       { owner: string; operator: string; approved: boolean }
     >;
+
+    Paused(account?: null): TypedEventFilter<[string], { account: string }>;
 
     RoleAdminChanged(
       role?: BytesLike | null,
@@ -725,6 +853,8 @@ export class ERC721Royalities extends BaseContract {
       [string, string, BigNumber],
       { from: string; to: string; tokenId: BigNumber }
     >;
+
+    Unpaused(account?: null): TypedEventFilter<[string], { account: string }>;
   };
 
   estimateGas: {
@@ -786,6 +916,11 @@ export class ERC721Royalities extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    isTrustedForwarder(
+      forwarder: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     mint(
       to: string,
       _tokenURI: string,
@@ -799,6 +934,12 @@ export class ERC721Royalities extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    pause(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    paused(overrides?: CallOverrides): Promise<BigNumber>;
+
     renounceRole(
       role: BytesLike,
       account: string,
@@ -809,6 +950,12 @@ export class ERC721Royalities extends BaseContract {
       role: BytesLike,
       account: string,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    royaltyInfo(
+      tokenId: BigNumberish,
+      value: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     'safeTransferFrom(address,address,uint256)'(
@@ -829,6 +976,13 @@ export class ERC721Royalities extends BaseContract {
     setApprovalForAll(
       operator: string,
       approved: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setTokenRoyalty(
+      tokenId: BigNumberish,
+      recipient: string,
+      value: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -861,6 +1015,10 @@ export class ERC721Royalities extends BaseContract {
       from: string,
       to: string,
       tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    unpause(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
@@ -929,6 +1087,11 @@ export class ERC721Royalities extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    isTrustedForwarder(
+      forwarder: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     mint(
       to: string,
       _tokenURI: string,
@@ -942,6 +1105,12 @@ export class ERC721Royalities extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    pause(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    paused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     renounceRole(
       role: BytesLike,
       account: string,
@@ -952,6 +1121,12 @@ export class ERC721Royalities extends BaseContract {
       role: BytesLike,
       account: string,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    royaltyInfo(
+      tokenId: BigNumberish,
+      value: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     'safeTransferFrom(address,address,uint256)'(
@@ -972,6 +1147,13 @@ export class ERC721Royalities extends BaseContract {
     setApprovalForAll(
       operator: string,
       approved: boolean,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setTokenRoyalty(
+      tokenId: BigNumberish,
+      recipient: string,
+      value: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1004,6 +1186,10 @@ export class ERC721Royalities extends BaseContract {
       from: string,
       to: string,
       tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    unpause(
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };

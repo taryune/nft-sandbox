@@ -18,34 +18,25 @@ import { Listener, Provider } from '@ethersproject/providers';
 import { FunctionFragment, EventFragment, Result } from '@ethersproject/abi';
 import { TypedEventFilter, TypedEvent, TypedListener } from './commons';
 
-interface ERC2981PerTokenRoyaltiesInterface extends ethers.utils.Interface {
+interface ERC2771ContextInterface extends ethers.utils.Interface {
   functions: {
-    'royaltyInfo(uint256,uint256)': FunctionFragment;
-    'supportsInterface(bytes4)': FunctionFragment;
+    'isTrustedForwarder(address)': FunctionFragment;
   };
 
   encodeFunctionData(
-    functionFragment: 'royaltyInfo',
-    values: [BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: 'supportsInterface',
-    values: [BytesLike]
+    functionFragment: 'isTrustedForwarder',
+    values: [string]
   ): string;
 
   decodeFunctionResult(
-    functionFragment: 'royaltyInfo',
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: 'supportsInterface',
+    functionFragment: 'isTrustedForwarder',
     data: BytesLike
   ): Result;
 
   events: {};
 }
 
-export class ERC2981PerTokenRoyalties extends BaseContract {
+export class ERC2771Context extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -86,47 +77,23 @@ export class ERC2981PerTokenRoyalties extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: ERC2981PerTokenRoyaltiesInterface;
+  interface: ERC2771ContextInterface;
 
   functions: {
-    royaltyInfo(
-      tokenId: BigNumberish,
-      value: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [string, BigNumber] & { receiver: string; royaltyAmount: BigNumber }
-    >;
-
-    supportsInterface(
-      interfaceId: BytesLike,
+    isTrustedForwarder(
+      forwarder: string,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
   };
 
-  royaltyInfo(
-    tokenId: BigNumberish,
-    value: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<
-    [string, BigNumber] & { receiver: string; royaltyAmount: BigNumber }
-  >;
-
-  supportsInterface(
-    interfaceId: BytesLike,
+  isTrustedForwarder(
+    forwarder: string,
     overrides?: CallOverrides
   ): Promise<boolean>;
 
   callStatic: {
-    royaltyInfo(
-      tokenId: BigNumberish,
-      value: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [string, BigNumber] & { receiver: string; royaltyAmount: BigNumber }
-    >;
-
-    supportsInterface(
-      interfaceId: BytesLike,
+    isTrustedForwarder(
+      forwarder: string,
       overrides?: CallOverrides
     ): Promise<boolean>;
   };
@@ -134,27 +101,15 @@ export class ERC2981PerTokenRoyalties extends BaseContract {
   filters: {};
 
   estimateGas: {
-    royaltyInfo(
-      tokenId: BigNumberish,
-      value: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    supportsInterface(
-      interfaceId: BytesLike,
+    isTrustedForwarder(
+      forwarder: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    royaltyInfo(
-      tokenId: BigNumberish,
-      value: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    supportsInterface(
-      interfaceId: BytesLike,
+    isTrustedForwarder(
+      forwarder: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };
