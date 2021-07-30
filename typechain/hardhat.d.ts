@@ -29,6 +29,10 @@ declare module 'hardhat/types/runtime' {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IAccessControlEnumerable__factory>;
     getContractFactory(
+      name: 'MinimalForwarder',
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.MinimalForwarder__factory>;
+    getContractFactory(
       name: 'Pausable',
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Pausable__factory>;
