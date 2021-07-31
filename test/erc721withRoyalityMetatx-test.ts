@@ -10,69 +10,16 @@ import {
   MinimalForwarder,
 } from '../typechain';
 
-const EIP712DomainType = [
-  { name: 'name', type: 'string' },
-  { name: 'version', type: 'string' },
-  { name: 'chainId', type: 'uint256' },
-  { name: 'verifyingContract', type: 'address' },
-];
-
-const ForwardRequestType = [
-  { name: 'from', type: 'address' },
-  { name: 'to', type: 'address' },
-  { name: 'value', type: 'uint256' },
-  { name: 'gas', type: 'uint256' },
-  { name: 'nonce', type: 'uint256' },
-  { name: 'data', type: 'bytes' },
-];
-
-type Message = {
-  from: string;
-  to: string;
-  value: number;
-  gas: number;
-  nonce: number;
-  data: string;
-};
-
-const createTypedData = (
-  chainId: number,
-  ForwarderAddress: string,
-  message: Message
-) => {
-  const TypedData = {
-    primaryType: 'ForwardRequest' as const,
-    types: {
-      EIP712Domain: EIP712DomainType,
-      ForwardRequest: ForwardRequestType,
-    },
-    domain: {
-      name: 'MinimalForwarder',
-      version: '0.0.1',
-      chainId,
-      verifyingContract: ForwarderAddress,
-    },
-    message,
-  };
-  return TypedData;
-};
+import { createTypedData } from './utils/MetaTransaction';
 
 describe('ERC721RoyalitiesMetaTx', () => {
   let contract: ERC721WithRoyalitiesMetaTx;
   let forwarder: MinimalForwarder;
   let signers: any;
-  const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
   beforeEach(async () => {
     const [deployer, user] = await ethers.getSigners();
-    //     const privateKey =
-    //       '0x9729e15de7c9c0ec06ebc2ab7f4dcf796f24d5add48ddf3c424a8019e9061ad8';
-    //     const user = new ethers.Wallet(privateKey, ethers.provider);
     signers = { deployer, user };
-    const name = 'Nameko';
-    const symbol = 'NMK';
-    const baseTokenURI = 'http://localhost:3000/';
-
     const MinimalForwarderFactory = await ethers.getContractFactory(
       'MinimalForwarder',
       deployer
@@ -82,6 +29,11 @@ describe('ERC721RoyalitiesMetaTx', () => {
       'ERC721WithRoyalitiesMetaTx',
       deployer
     );
+
+    const name = 'Nameko';
+    const symbol = 'NMK';
+    const baseTokenURI = 'http://localhost:3000/';
+
     const erc721WithRoyalitiesMetaTx =
       await ERC721WithRoyalitiesMetaTxFactory.deploy(
         name,
@@ -102,24 +54,6 @@ describe('ERC721RoyalitiesMetaTx', () => {
       expect(await contract.isTrustedForwarder(forwarder.address)).to.be.equal(
         true
       );
-    });
-    it('successful', async () => {
-      const { chainId } = await ethers.provider.getNetwork();
-      const request = {
-        from: signers.user.address,
-        to: ZERO_ADDRESS,
-        value: 0,
-        gas: 1e6,
-        nonce: (await forwarder.getNonce(signers.user.address)).toNumber(),
-        data: '0x',
-      };
-
-      const TypedData = createTypedData(chainId, forwarder.address, request);
-      const signature = await ethers.provider.send('eth_signTypedData_v4', [
-        signers.user.address,
-        TypedData,
-      ]);
-      expect(await forwarder.verify(request, signature)).to.be.equal(true);
     });
   });
 
@@ -156,34 +90,39 @@ describe('ERC721RoyalitiesMetaTx', () => {
         signers.user.address,
         1
       );
-
+      // get balances
       const beforeUserBalance = await signers.user.getBalance();
       const beforeDeployerBalance = await signers.deployer.getBalance();
-      const nonce = await forwarder.getNonce(signers.user.address);
-      const { chainId } = await ethers.provider.getNetwork();
+
+      // encodeFunctionData
       const data = contract.interface.encodeFunctionData('transferFrom', [
         signers.user.address,
         signers.deployer.address,
         1,
       ]);
+      // create request
       const request = {
         from: signers.user.address,
         to: contract.address,
         value: 0,
         gas: 1e6,
-        nonce: nonce.toNumber(),
+        nonce: (await forwarder.getNonce(signers.user.address)).toNumber(),
         data,
       };
+      const { chainId } = await ethers.provider.getNetwork();
       const TypedData = createTypedData(chainId, forwarder.address, request);
-
+      // sign
       const signature = await ethers.provider.send('eth_signTypedData_v4', [
         signers.user.address,
         TypedData,
       ]);
-      await forwarder.verify(request, signature);
+
       await forwarder.execute(request, signature);
+
+      // get balances
       const afterUserBalance = await signers.user.getBalance();
       const afterDeployerBalance = await signers.deployer.getBalance();
+
       expect(await contract.ownerOf(1)).to.be.equal(signers.deployer.address);
       expect(afterUserBalance).to.be.equal(beforeUserBalance);
       expect(afterDeployerBalance).to.be.below(beforeDeployerBalance);
