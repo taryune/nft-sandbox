@@ -3,3 +3,9 @@ node_modules
 #Hardhat files
 cache
 artifacts
+
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
