@@ -21,12 +21,15 @@ import { TypedEventFilter, TypedEvent, TypedListener } from './commons';
 
 interface MinimalForwarderInterface extends ethers.utils.Interface {
   functions: {
+    'domain()': FunctionFragment;
     'execute(tuple,bytes)': FunctionFragment;
     'getNonce(address)': FunctionFragment;
     'getSigner(tuple,bytes)': FunctionFragment;
+    'hash(tuple)': FunctionFragment;
     'verify(tuple,bytes)': FunctionFragment;
   };
 
+  encodeFunctionData(functionFragment: 'domain', values?: undefined): string;
   encodeFunctionData(
     functionFragment: 'execute',
     values: [
@@ -57,6 +60,19 @@ interface MinimalForwarderInterface extends ethers.utils.Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: 'hash',
+    values: [
+      {
+        from: string;
+        to: string;
+        value: BigNumberish;
+        gas: BigNumberish;
+        nonce: BigNumberish;
+        data: BytesLike;
+      }
+    ]
+  ): string;
+  encodeFunctionData(
     functionFragment: 'verify',
     values: [
       {
@@ -71,9 +87,11 @@ interface MinimalForwarderInterface extends ethers.utils.Interface {
     ]
   ): string;
 
+  decodeFunctionResult(functionFragment: 'domain', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'execute', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'getNonce', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'getSigner', data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: 'hash', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'verify', data: BytesLike): Result;
 
   events: {};
@@ -123,6 +141,8 @@ export class MinimalForwarder extends BaseContract {
   interface: MinimalForwarderInterface;
 
   functions: {
+    domain(overrides?: CallOverrides): Promise<[string]>;
+
     execute(
       req: {
         from: string;
@@ -151,6 +171,18 @@ export class MinimalForwarder extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string, string]>;
 
+    hash(
+      req: {
+        from: string;
+        to: string;
+        value: BigNumberish;
+        gas: BigNumberish;
+        nonce: BigNumberish;
+        data: BytesLike;
+      },
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
     verify(
       req: {
         from: string;
@@ -164,6 +196,8 @@ export class MinimalForwarder extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
   };
+
+  domain(overrides?: CallOverrides): Promise<string>;
 
   execute(
     req: {
@@ -193,6 +227,18 @@ export class MinimalForwarder extends BaseContract {
     overrides?: CallOverrides
   ): Promise<[string, string]>;
 
+  hash(
+    req: {
+      from: string;
+      to: string;
+      value: BigNumberish;
+      gas: BigNumberish;
+      nonce: BigNumberish;
+      data: BytesLike;
+    },
+    overrides?: CallOverrides
+  ): Promise<string>;
+
   verify(
     req: {
       from: string;
@@ -207,6 +253,8 @@ export class MinimalForwarder extends BaseContract {
   ): Promise<boolean>;
 
   callStatic: {
+    domain(overrides?: CallOverrides): Promise<string>;
+
     execute(
       req: {
         from: string;
@@ -235,6 +283,18 @@ export class MinimalForwarder extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string, string]>;
 
+    hash(
+      req: {
+        from: string;
+        to: string;
+        value: BigNumberish;
+        gas: BigNumberish;
+        nonce: BigNumberish;
+        data: BytesLike;
+      },
+      overrides?: CallOverrides
+    ): Promise<string>;
+
     verify(
       req: {
         from: string;
@@ -252,6 +312,8 @@ export class MinimalForwarder extends BaseContract {
   filters: {};
 
   estimateGas: {
+    domain(overrides?: CallOverrides): Promise<BigNumber>;
+
     execute(
       req: {
         from: string;
@@ -280,6 +342,18 @@ export class MinimalForwarder extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    hash(
+      req: {
+        from: string;
+        to: string;
+        value: BigNumberish;
+        gas: BigNumberish;
+        nonce: BigNumberish;
+        data: BytesLike;
+      },
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     verify(
       req: {
         from: string;
@@ -295,6 +369,8 @@ export class MinimalForwarder extends BaseContract {
   };
 
   populateTransaction: {
+    domain(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     execute(
       req: {
         from: string;
@@ -323,6 +399,18 @@ export class MinimalForwarder extends BaseContract {
         data: BytesLike;
       },
       signature: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    hash(
+      req: {
+        from: string;
+        to: string;
+        value: BigNumberish;
+        gas: BigNumberish;
+        nonce: BigNumberish;
+        data: BytesLike;
+      },
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
