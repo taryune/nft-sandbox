@@ -7,7 +7,7 @@ import {
   ERC721WithRoyalities,
 } from '../typechain';
 
-describe('ERC721RoyalitiesMetaTx', () => {
+describe('ERC721Royalities', () => {
   let contract: ERC721WithRoyalities;
   let signers: any;
 
