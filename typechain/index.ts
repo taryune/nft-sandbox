@@ -22,7 +22,6 @@ export type { ERC2771Context } from './ERC2771Context';
 export type { ERC2981 } from './ERC2981';
 export type { ERC721WithRoyalty } from './ERC721WithRoyalty';
 export type { ERC721WithRoyaltyMetaTx } from './ERC721WithRoyaltyMetaTx';
-export type { Hokusai } from './Hokusai';
 export type { IERC2981 } from './IERC2981';
 
 export { AccessControl__factory } from './factories/AccessControl__factory';
@@ -46,5 +45,4 @@ export { ERC2771Context__factory } from './factories/ERC2771Context__factory';
 export { ERC2981__factory } from './factories/ERC2981__factory';
 export { ERC721WithRoyalty__factory } from './factories/ERC721WithRoyalty__factory';
 export { ERC721WithRoyaltyMetaTx__factory } from './factories/ERC721WithRoyaltyMetaTx__factory';
-export { Hokusai__factory } from './factories/Hokusai__factory';
 export { IERC2981__factory } from './factories/IERC2981__factory';

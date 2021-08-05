@@ -5,7 +5,7 @@ import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
 
 import './interfaces/IERC2981.sol';
 
-/// @dev This is a contract used to add ERC2981 support to ERC721 and 1155
+// @dev This is a contract used to add ERC2981 support to ERC721 and 1155
 abstract contract ERC2981 is ERC165, IERC2981 {
     struct Royalty {
         address recipient;
@@ -14,7 +14,7 @@ abstract contract ERC2981 is ERC165, IERC2981 {
 
     mapping(uint256 => Royalty) internal _royalties;
 
-    /// @inheritdoc	ERC165
+    // @inheritdoc	ERC165
     function supportsInterface(bytes4 interfaceId)
         public
         view
@@ -25,10 +25,12 @@ abstract contract ERC2981 is ERC165, IERC2981 {
         return interfaceId == type(IERC2981).interfaceId;
     }
 
-    /// @dev Sets token royalties
-    /// @param id the token id fir which we register the royalties
-    /// @param recipient recipient of the royalties
-    /// @param value percentage (using 2 decimals - 10000 = 100, 0 = 0)
+    /**
+     * @dev Sets token royalties
+     * @param id the token id fir which we register the royalties
+     * @param recipient recipient of the royalties
+     * @param value percentage (using 2 decimals - 10000 = 100, 0 = 0)
+     */
     function _setTokenRoyalty(
         uint256 id,
         address recipient,
@@ -39,7 +41,7 @@ abstract contract ERC2981 is ERC165, IERC2981 {
         _royalties[id] = Royalty(recipient, value);
     }
 
-    /// @inheritdoc	IERC2981
+    // @inheritdoc	IERC2981
     function royaltyInfo(uint256 tokenId, uint256 value)
         external
         view

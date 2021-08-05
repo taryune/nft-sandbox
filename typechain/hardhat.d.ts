@@ -97,10 +97,6 @@ declare module 'hardhat/types/runtime' {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC721WithRoyaltyMetaTx__factory>;
     getContractFactory(
-      name: 'Hokusai',
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.Hokusai__factory>;
-    getContractFactory(
       name: 'IERC2981',
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC2981__factory>;

@@ -39,6 +39,11 @@ contract ERC721WithRoyalty is
         _setupRole(PAUSER_ROLE, _msgSender());
     }
 
+    /**
+     * @dev Creates a new token for 'to'
+     * @param to Address token send to
+     * @param _tokenURI token's Metadata URI
+     */
     function mint(address to, string memory _tokenURI)
         external
         returns (uint256)
@@ -53,6 +58,7 @@ contract ERC721WithRoyalty is
         return _tokenIdTracker.current();
     }
 
+    // @inheritdoc ERC721
     function _burn(uint256 tokenId)
         internal
         override(ERC721, ERC721URIStorage)
@@ -60,6 +66,7 @@ contract ERC721WithRoyalty is
         super._burn(tokenId);
     }
 
+    // @inheritdoc ERC721
     function tokenURI(uint256 tokenId)
         public
         view
@@ -69,6 +76,12 @@ contract ERC721WithRoyalty is
         return super.tokenURI(tokenId);
     }
 
+    /**
+     * @dev Sets token royalties
+     * @param tokenId the token id fir which we register the royalties
+     * @param recipient recipient of the royalties
+     * @param value percentage (using 2 decimals - 10000 = 100, 0 = 0)
+     */
     function setTokenRoyalty(
         uint256 tokenId,
         address recipient,
@@ -85,6 +98,15 @@ contract ERC721WithRoyalty is
         _setTokenRoyalty(tokenId, recipient, value);
     }
 
+    /**
+     * @dev Pauses all token transfers.
+     *
+     * See {ERC721Pausable} and {Pausable-_pause}.
+     *
+     * Requirements:
+     *
+     * - the caller must have the `PAUSER_ROLE`.
+     */
     function pause() public {
         require(
             hasRole(PAUSER_ROLE, _msgSender()),
@@ -93,6 +115,15 @@ contract ERC721WithRoyalty is
         _pause();
     }
 
+    /**
+     * @dev Unpauses all token transfers.
+     *
+     * See {ERC721Pausable} and {Pausable-_unpause}.
+     *
+     * Requirements:
+     *
+     * - the caller must have the `PAUSER_ROLE`.
+     */
     function unpause() public {
         require(
             hasRole(PAUSER_ROLE, _msgSender()),
@@ -109,6 +140,7 @@ contract ERC721WithRoyalty is
         super._beforeTokenTransfer(from, to, tokenId);
     }
 
+    /// @inheritdoc	ERC165
     function supportsInterface(bytes4 interfaceId)
         public
         view
