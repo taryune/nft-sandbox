@@ -16,7 +16,7 @@ const _abi = [
       },
       {
         internalType: 'uint256',
-        name: 'value',
+        name: 'salePrice',
         type: 'uint256',
       },
     ],

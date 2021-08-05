@@ -91,7 +91,7 @@ export class ERC2981 extends BaseContract {
   functions: {
     royaltyInfo(
       tokenId: BigNumberish,
-      value: BigNumberish,
+      salePrice: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
       [string, BigNumber] & { receiver: string; royaltyAmount: BigNumber }
@@ -105,7 +105,7 @@ export class ERC2981 extends BaseContract {
 
   royaltyInfo(
     tokenId: BigNumberish,
-    value: BigNumberish,
+    salePrice: BigNumberish,
     overrides?: CallOverrides
   ): Promise<
     [string, BigNumber] & { receiver: string; royaltyAmount: BigNumber }
@@ -119,7 +119,7 @@ export class ERC2981 extends BaseContract {
   callStatic: {
     royaltyInfo(
       tokenId: BigNumberish,
-      value: BigNumberish,
+      salePrice: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
       [string, BigNumber] & { receiver: string; royaltyAmount: BigNumber }
@@ -136,7 +136,7 @@ export class ERC2981 extends BaseContract {
   estimateGas: {
     royaltyInfo(
       tokenId: BigNumberish,
-      value: BigNumberish,
+      salePrice: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -149,7 +149,7 @@ export class ERC2981 extends BaseContract {
   populateTransaction: {
     royaltyInfo(
       tokenId: BigNumberish,
-      value: BigNumberish,
+      salePrice: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

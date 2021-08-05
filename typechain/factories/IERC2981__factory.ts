@@ -16,7 +16,7 @@ const _abi = [
       },
       {
         internalType: 'uint256',
-        name: '_value',
+        name: '_salePrice',
         type: 'uint256',
       },
     ],
@@ -24,13 +24,32 @@ const _abi = [
     outputs: [
       {
         internalType: 'address',
-        name: '_receiver',
+        name: 'receiver',
         type: 'address',
       },
       {
         internalType: 'uint256',
-        name: '_royaltyAmount',
+        name: 'royaltyAmount',
         type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes4',
+        name: 'interfaceID',
+        type: 'bytes4',
+      },
+    ],
+    name: 'supportsInterface',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
       },
     ],
     stateMutability: 'view',

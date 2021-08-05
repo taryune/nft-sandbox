@@ -417,7 +417,7 @@ export class ERC721WithRoyaltyMetaTx extends BaseContract {
 
     royaltyInfo(
       tokenId: BigNumberish,
-      value: BigNumberish,
+      salePrice: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
       [string, BigNumber] & { receiver: string; royaltyAmount: BigNumber }
@@ -578,7 +578,7 @@ export class ERC721WithRoyaltyMetaTx extends BaseContract {
 
   royaltyInfo(
     tokenId: BigNumberish,
-    value: BigNumberish,
+    salePrice: BigNumberish,
     overrides?: CallOverrides
   ): Promise<
     [string, BigNumber] & { receiver: string; royaltyAmount: BigNumber }
@@ -731,7 +731,7 @@ export class ERC721WithRoyaltyMetaTx extends BaseContract {
 
     royaltyInfo(
       tokenId: BigNumberish,
-      value: BigNumberish,
+      salePrice: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
       [string, BigNumber] & { receiver: string; royaltyAmount: BigNumber }
@@ -954,7 +954,7 @@ export class ERC721WithRoyaltyMetaTx extends BaseContract {
 
     royaltyInfo(
       tokenId: BigNumberish,
-      value: BigNumberish,
+      salePrice: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1125,7 +1125,7 @@ export class ERC721WithRoyaltyMetaTx extends BaseContract {
 
     royaltyInfo(
       tokenId: BigNumberish,
-      value: BigNumberish,
+      salePrice: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
