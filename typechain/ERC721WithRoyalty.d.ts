@@ -19,7 +19,7 @@ import { Listener, Provider } from '@ethersproject/providers';
 import { FunctionFragment, EventFragment, Result } from '@ethersproject/abi';
 import { TypedEventFilter, TypedEvent, TypedListener } from './commons';
 
-interface ERC721WithRoyalitiesMetaTxInterface extends ethers.utils.Interface {
+interface ERC721WithRoyaltyInterface extends ethers.utils.Interface {
   functions: {
     'DEFAULT_ADMIN_ROLE()': FunctionFragment;
     'MINTER_ROLE()': FunctionFragment;
@@ -34,7 +34,6 @@ interface ERC721WithRoyalitiesMetaTxInterface extends ethers.utils.Interface {
     'grantRole(bytes32,address)': FunctionFragment;
     'hasRole(bytes32,address)': FunctionFragment;
     'isApprovedForAll(address,address)': FunctionFragment;
-    'isTrustedForwarder(address)': FunctionFragment;
     'mint(address,string)': FunctionFragment;
     'name()': FunctionFragment;
     'ownerOf(uint256)': FunctionFragment;
@@ -101,10 +100,6 @@ interface ERC721WithRoyalitiesMetaTxInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: 'isApprovedForAll',
     values: [string, string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: 'isTrustedForwarder',
-    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: 'mint',
@@ -205,10 +200,6 @@ interface ERC721WithRoyalitiesMetaTxInterface extends ethers.utils.Interface {
     functionFragment: 'isApprovedForAll',
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: 'isTrustedForwarder',
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: 'mint', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'name', data: BytesLike): Result;
   decodeFunctionResult(functionFragment: 'ownerOf', data: BytesLike): Result;
@@ -280,7 +271,7 @@ interface ERC721WithRoyalitiesMetaTxInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: 'Unpaused'): EventFragment;
 }
 
-export class ERC721WithRoyalitiesMetaTx extends BaseContract {
+export class ERC721WithRoyalty extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -321,7 +312,7 @@ export class ERC721WithRoyalitiesMetaTx extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: ERC721WithRoyalitiesMetaTxInterface;
+  interface: ERC721WithRoyaltyInterface;
 
   functions: {
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<[string]>;
@@ -376,11 +367,6 @@ export class ERC721WithRoyalitiesMetaTx extends BaseContract {
     isApprovedForAll(
       owner: string,
       operator: string,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
-
-    isTrustedForwarder(
-      forwarder: string,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
@@ -543,11 +529,6 @@ export class ERC721WithRoyalitiesMetaTx extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  isTrustedForwarder(
-    forwarder: string,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
   mint(
     to: string,
     _tokenURI: string,
@@ -695,11 +676,6 @@ export class ERC721WithRoyalitiesMetaTx extends BaseContract {
     isApprovedForAll(
       owner: string,
       operator: string,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    isTrustedForwarder(
-      forwarder: string,
       overrides?: CallOverrides
     ): Promise<boolean>;
 
@@ -916,11 +892,6 @@ export class ERC721WithRoyalitiesMetaTx extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    isTrustedForwarder(
-      forwarder: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     mint(
       to: string,
       _tokenURI: string,
@@ -1084,11 +1055,6 @@ export class ERC721WithRoyalitiesMetaTx extends BaseContract {
     isApprovedForAll(
       owner: string,
       operator: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    isTrustedForwarder(
-      forwarder: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

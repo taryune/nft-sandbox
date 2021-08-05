@@ -12,6 +12,7 @@ import {
   BaseContract,
   ContractTransaction,
   Overrides,
+  PayableOverrides,
   CallOverrides,
 } from 'ethers';
 import { BytesLike } from '@ethersproject/bytes';
@@ -24,6 +25,7 @@ interface HokusaiInterface extends ethers.utils.Interface {
     'DEFAULT_ADMIN_ROLE()': FunctionFragment;
     'MINTER_ROLE()': FunctionFragment;
     'PAUSER_ROLE()': FunctionFragment;
+    '_payCommission()': FunctionFragment;
     'approve(address,uint256)': FunctionFragment;
     'balanceOf(address)': FunctionFragment;
     'burn(uint256)': FunctionFragment;
@@ -66,6 +68,10 @@ interface HokusaiInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: 'PAUSER_ROLE',
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: '_payCommission',
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -178,6 +184,10 @@ interface HokusaiInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: 'PAUSER_ROLE',
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: '_payCommission',
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: 'approve', data: BytesLike): Result;
@@ -329,6 +339,10 @@ export class Hokusai extends BaseContract {
     MINTER_ROLE(overrides?: CallOverrides): Promise<[string]>;
 
     PAUSER_ROLE(overrides?: CallOverrides): Promise<[string]>;
+
+    _payCommission(
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     approve(
       to: string,
@@ -494,6 +508,10 @@ export class Hokusai extends BaseContract {
 
   PAUSER_ROLE(overrides?: CallOverrides): Promise<string>;
 
+  _payCommission(
+    overrides?: PayableOverrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   approve(
     to: string,
     tokenId: BigNumberish,
@@ -651,6 +669,8 @@ export class Hokusai extends BaseContract {
     MINTER_ROLE(overrides?: CallOverrides): Promise<string>;
 
     PAUSER_ROLE(overrides?: CallOverrides): Promise<string>;
+
+    _payCommission(overrides?: CallOverrides): Promise<BigNumber>;
 
     approve(
       to: string,
@@ -864,6 +884,10 @@ export class Hokusai extends BaseContract {
 
     PAUSER_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
 
+    _payCommission(
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     approve(
       to: string,
       tokenId: BigNumberish,
@@ -1031,6 +1055,10 @@ export class Hokusai extends BaseContract {
     MINTER_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     PAUSER_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    _payCommission(
+      overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     approve(
       to: string,

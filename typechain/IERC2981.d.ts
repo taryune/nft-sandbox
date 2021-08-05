@@ -18,34 +18,25 @@ import { Listener, Provider } from '@ethersproject/providers';
 import { FunctionFragment, EventFragment, Result } from '@ethersproject/abi';
 import { TypedEventFilter, TypedEvent, TypedListener } from './commons';
 
-interface ERC2981RoyaltiesInterface extends ethers.utils.Interface {
+interface IERC2981Interface extends ethers.utils.Interface {
   functions: {
     'royaltyInfo(uint256,uint256)': FunctionFragment;
-    'supportsInterface(bytes4)': FunctionFragment;
   };
 
   encodeFunctionData(
     functionFragment: 'royaltyInfo',
     values: [BigNumberish, BigNumberish]
   ): string;
-  encodeFunctionData(
-    functionFragment: 'supportsInterface',
-    values: [BytesLike]
-  ): string;
 
   decodeFunctionResult(
     functionFragment: 'royaltyInfo',
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: 'supportsInterface',
     data: BytesLike
   ): Result;
 
   events: {};
 }
 
-export class ERC2981Royalties extends BaseContract {
+export class IERC2981 extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -86,75 +77,50 @@ export class ERC2981Royalties extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: ERC2981RoyaltiesInterface;
+  interface: IERC2981Interface;
 
   functions: {
     royaltyInfo(
-      tokenId: BigNumberish,
-      value: BigNumberish,
+      _tokenId: BigNumberish,
+      _value: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [string, BigNumber] & { receiver: string; royaltyAmount: BigNumber }
+      [string, BigNumber] & { _receiver: string; _royaltyAmount: BigNumber }
     >;
-
-    supportsInterface(
-      interfaceId: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
   };
 
   royaltyInfo(
-    tokenId: BigNumberish,
-    value: BigNumberish,
+    _tokenId: BigNumberish,
+    _value: BigNumberish,
     overrides?: CallOverrides
   ): Promise<
-    [string, BigNumber] & { receiver: string; royaltyAmount: BigNumber }
+    [string, BigNumber] & { _receiver: string; _royaltyAmount: BigNumber }
   >;
-
-  supportsInterface(
-    interfaceId: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
 
   callStatic: {
     royaltyInfo(
-      tokenId: BigNumberish,
-      value: BigNumberish,
+      _tokenId: BigNumberish,
+      _value: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [string, BigNumber] & { receiver: string; royaltyAmount: BigNumber }
+      [string, BigNumber] & { _receiver: string; _royaltyAmount: BigNumber }
     >;
-
-    supportsInterface(
-      interfaceId: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
   };
 
   filters: {};
 
   estimateGas: {
     royaltyInfo(
-      tokenId: BigNumberish,
-      value: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    supportsInterface(
-      interfaceId: BytesLike,
+      _tokenId: BigNumberish,
+      _value: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
     royaltyInfo(
-      tokenId: BigNumberish,
-      value: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    supportsInterface(
-      interfaceId: BytesLike,
+      _tokenId: BigNumberish,
+      _value: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };

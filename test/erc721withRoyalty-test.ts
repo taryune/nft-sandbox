@@ -3,19 +3,19 @@ import { ethers } from 'hardhat';
 import { expect } from 'chai';
 import {
   // eslint-disable-next-line
-  ERC721WithRoyalities__factory,
-  ERC721WithRoyalities,
+  ERC721WithRoyalty__factory,
+  ERC721WithRoyalty,
 } from '../typechain';
 
-describe('ERC721Royalities', () => {
-  let contract: ERC721WithRoyalities;
+describe('ERC721Royalty', () => {
+  let contract: ERC721WithRoyalty;
   let signers: any;
 
   beforeEach(async () => {
     const [deployer, user] = await ethers.getSigners();
     signers = { deployer, user };
-    const ERC721WithRoyalitiesFactory = await ethers.getContractFactory(
-      'ERC721WithRoyalities',
+    const ERC721WithRoyaltyFactory = await ethers.getContractFactory(
+      'ERC721WithRoyalty',
       deployer
     );
 
@@ -23,13 +23,13 @@ describe('ERC721Royalities', () => {
     const symbol = 'NMK';
     const baseTokenURI = 'http://localhost:3000/';
 
-    const erc721WithRoyalities = await ERC721WithRoyalitiesFactory.deploy(
+    const erc721WithRoyalty = await ERC721WithRoyaltyFactory.deploy(
       name,
       symbol,
       baseTokenURI
     );
-    contract = new ERC721WithRoyalities__factory(deployer).attach(
-      erc721WithRoyalities.address
+    contract = new ERC721WithRoyalty__factory(deployer).attach(
+      erc721WithRoyalty.address
     );
   });
 
@@ -43,7 +43,7 @@ describe('ERC721Royalities', () => {
     it('must have minter role', async () => {
       await expect(
         contract.connect(signers.user).mint(signers.user.address, 'fugafuga')
-      ).to.revertedWith('ERC721WithRoyalities: must have minter role to mint');
+      ).to.revertedWith('ERC721WithRoyalty: must have minter role to mint');
     });
   });
 
@@ -118,19 +118,19 @@ describe('ERC721Royalities', () => {
           .connect(signers.user)
           .setTokenRoyalty(1, signers.user.address, 5000)
       ).to.revertedWith(
-        'ERC721WithRoyalities: must have minter role to set royalty'
+        'ERC721WithRoyalty: must have minter role to set royalty'
       );
     });
     it('too high', async () => {
       await expect(
         // 100.01%
         contract.setTokenRoyalty(1, signers.deployer.address, 10001)
-      ).to.revertedWith('ERC2981Royalties: too high');
+      ).to.revertedWith('ERC2981: too high');
     });
     it('invalid token id', async () => {
       await expect(
         contract.setTokenRoyalty(2, signers.deployer.address, 5000)
-      ).to.revertedWith('ERC721WithRoyalities: invalid token id');
+      ).to.revertedWith('ERC721WithRoyalty: invalid token id');
     });
   });
   describe('Pause', async () => {
@@ -142,7 +142,7 @@ describe('ERC721Royalities', () => {
     });
     it('must have pauser role', async () => {
       await expect(contract.connect(signers.user).pause()).to.revertedWith(
-        'ERC721WithRoyalities: must have pauser role to pause'
+        'ERC721WithRoyalty: must have pauser role to pause'
       );
     });
   });
@@ -157,7 +157,7 @@ describe('ERC721Royalities', () => {
     });
     it('must have pauser role', async () => {
       await expect(contract.connect(signers.user).unpause()).to.revertedWith(
-        'ERC721WithRoyalities: must have pauser role to unpause'
+        'ERC721WithRoyalty: must have pauser role to unpause'
       );
     });
   });

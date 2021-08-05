@@ -3,10 +3,10 @@ pragma solidity ^0.8.0;
 
 import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
 
-import './interfaces/IERC2981Royalties.sol';
+import './interfaces/IERC2981.sol';
 
 /// @dev This is a contract used to add ERC2981 support to ERC721 and 1155
-abstract contract ERC2981Royalties is ERC165, IERC2981Royalties {
+abstract contract ERC2981 is ERC165, IERC2981 {
     struct Royalty {
         address recipient;
         uint256 value;
@@ -22,7 +22,7 @@ abstract contract ERC2981Royalties is ERC165, IERC2981Royalties {
         override
         returns (bool)
     {
-        return interfaceId == type(IERC2981Royalties).interfaceId;
+        return interfaceId == type(IERC2981).interfaceId;
     }
 
     /// @dev Sets token royalties
@@ -34,12 +34,12 @@ abstract contract ERC2981Royalties is ERC165, IERC2981Royalties {
         address recipient,
         uint256 value
     ) internal {
-        require(value <= 10000, 'ERC2981Royalties: too high');
+        require(value <= 10000, 'ERC2981: too high');
 
         _royalties[id] = Royalty(recipient, value);
     }
 
-    /// @inheritdoc	IERC2981Royalties
+    /// @inheritdoc	IERC2981
     function royaltyInfo(uint256 tokenId, uint256 value)
         external
         view

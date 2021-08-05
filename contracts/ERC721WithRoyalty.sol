@@ -8,20 +8,17 @@ import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
 import '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
-import '@openzeppelin/contracts/utils/Context.sol';
 
-import './ERC2981Royalties.sol';
+import './ERC2981.sol';
 
-contract ERC721WithRoyalities is
-    Context,
+contract ERC721WithRoyalty is
     AccessControlEnumerable,
     ERC721Enumerable,
     ERC721Burnable,
     ERC721Pausable,
     ERC721URIStorage,
-    ERC2981Royalties
+    ERC2981
 {
-    using Strings for uint256;
     using Counters for Counters.Counter;
 
     bytes32 public constant MINTER_ROLE = keccak256('MINTER_ROLE');
@@ -48,7 +45,7 @@ contract ERC721WithRoyalities is
     {
         require(
             hasRole(MINTER_ROLE, _msgSender()),
-            'ERC721WithRoyalities: must have minter role to mint'
+            'ERC721WithRoyalty: must have minter role to mint'
         );
         _tokenIdTracker.increment();
         _safeMint(to, _tokenIdTracker.current());
@@ -66,7 +63,6 @@ contract ERC721WithRoyalities is
     function tokenURI(uint256 tokenId)
         public
         view
-        virtual
         override(ERC721, ERC721URIStorage)
         returns (string memory)
     {
@@ -80,27 +76,27 @@ contract ERC721WithRoyalities is
     ) external {
         require(
             hasRole(MINTER_ROLE, _msgSender()),
-            'ERC721WithRoyalities: must have minter role to set royalty'
+            'ERC721WithRoyalty: must have minter role to set royalty'
         );
         require(
             tokenId <= _tokenIdTracker.current(),
-            'ERC721WithRoyalities: invalid token id'
+            'ERC721WithRoyalty: invalid token id'
         );
         _setTokenRoyalty(tokenId, recipient, value);
     }
 
-    function pause() public virtual {
+    function pause() public {
         require(
             hasRole(PAUSER_ROLE, _msgSender()),
-            'ERC721WithRoyalities: must have pauser role to pause'
+            'ERC721WithRoyalty: must have pauser role to pause'
         );
         _pause();
     }
 
-    function unpause() public virtual {
+    function unpause() public {
         require(
             hasRole(PAUSER_ROLE, _msgSender()),
-            'ERC721WithRoyalities: must have pauser role to unpause'
+            'ERC721WithRoyalty: must have pauser role to unpause'
         );
         _unpause();
     }
@@ -117,12 +113,7 @@ contract ERC721WithRoyalities is
         public
         view
         virtual
-        override(
-            AccessControlEnumerable,
-            ERC721,
-            ERC721Enumerable,
-            ERC2981Royalties
-        )
+        override(AccessControlEnumerable, ERC721, ERC721Enumerable, ERC2981)
         returns (bool)
     {
         return super.supportsInterface(interfaceId);

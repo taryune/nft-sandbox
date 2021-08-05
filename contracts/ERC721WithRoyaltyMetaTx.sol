@@ -11,22 +11,17 @@ import '@openzeppelin/contracts/access/AccessControlEnumerable.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 import '@openzeppelin/contracts/utils/Context.sol';
 
-import './ERC2981Royalties.sol';
 import './ERC2771Context.sol';
-import './ERC721WithRoyalities.sol';
+import './ERC721WithRoyalty.sol';
 
-contract ERC721WithRoyalitiesMetaTx is
-    Context,
-    ERC721WithRoyalities,
-    ERC2771Context
-{
+contract ERC721WithRoyaltyMetaTx is Context, ERC721WithRoyalty, ERC2771Context {
     constructor(
         string memory name,
         string memory symbol,
         string memory baseTokenURI,
         MinimalForwarder fowarder
     )
-        ERC721WithRoyalities(name, symbol, baseTokenURI)
+        ERC721WithRoyalty(name, symbol, baseTokenURI)
         ERC2771Context(address(fowarder))
     {}
 

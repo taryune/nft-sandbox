@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 /// @title IERC2981Royalties
 /// @dev Interface for the ERC2981 - Token Royalty standard
-interface IERC2981Royalties {
+interface IERC2981 {
     /// @notice Called with the sale price to determine how much royalty
     //          is owed and to whom.
     /// @param _tokenId - the NFT asset queried for royalty information

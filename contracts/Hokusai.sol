@@ -4,9 +4,9 @@ pragma solidity ^0.8.0;
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import '@openzeppelin/contracts/metatx/MinimalForwarder.sol';
 
-import './ERC721WithRoyalitiesMetaTx.sol';
+import './ERC721WithRoyaltyMetaTx.sol';
 
-contract Hokusai is ERC721WithRoyalitiesMetaTx {
+contract Hokusai is ERC721WithRoyaltyMetaTx {
     address private _payee;
 
     constructor(
@@ -15,15 +15,17 @@ contract Hokusai is ERC721WithRoyalitiesMetaTx {
         string memory baseTokenURI,
         MinimalForwarder fowarder,
         address payee
-    ) ERC721WithRoyalitiesMetaTx(name, symbol, baseTokenURI, fowarder) {
+    ) ERC721WithRoyaltyMetaTx(name, symbol, baseTokenURI, fowarder) {
         _payee = payee;
     }
 
-    function _payCommission() internal {
+    function _payCommission() public payable returns (uint256) {
+        uint256 commission = 0;
         if (msg.value > 0) {
-            uint256 commission = SafeMath.mul(msg.value, SafeMath.div(100, 50));
+            commission = SafeMath.mul(msg.value, SafeMath.div(100, 50));
             payable(_payee).transfer(commission);
         }
+        return commission;
     }
 
     function transferFrom(
