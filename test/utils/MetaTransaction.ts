@@ -1,3 +1,6 @@
+import { ethers } from 'hardhat';
+import { ERC721WithRoyaltyMetaTx, MinimalForwarder } from '../../typechain';
+
 export type Message = {
   from: string;
   to: string;
@@ -45,4 +48,31 @@ export function createTypedData(
     message,
   };
   return TypedData;
+}
+
+export async function sign(
+  from: string,
+  signer: string,
+  value: number,
+  data: string,
+  forwarder: MinimalForwarder,
+  contract: ERC721WithRoyaltyMetaTx
+) {
+  const request = {
+    from,
+    to: contract.address,
+    value,
+    gas: 1e6,
+    nonce: (await forwarder.getNonce(signer)).toNumber(),
+    data,
+  };
+  const { chainId } = await ethers.provider.getNetwork();
+  const TypedData = createTypedData(chainId, forwarder.address, request);
+  // sign
+  const signature = await ethers.provider.send('eth_signTypedData_v4', [
+    signer,
+    TypedData,
+  ]);
+
+  return [request, signature];
 }

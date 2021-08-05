@@ -4,10 +4,7 @@
 
 import { Contract, Signer, utils } from 'ethers';
 import { Provider } from '@ethersproject/providers';
-import type {
-  ERC2981Royalties,
-  ERC2981RoyaltiesInterface,
-} from '../ERC2981Royalties';
+import type { ERC2981, ERC2981Interface } from '../ERC2981';
 
 const _abi = [
   {
@@ -60,15 +57,15 @@ const _abi = [
   },
 ];
 
-export class ERC2981Royalties__factory {
+export class ERC2981__factory {
   static readonly abi = _abi;
-  static createInterface(): ERC2981RoyaltiesInterface {
-    return new utils.Interface(_abi) as ERC2981RoyaltiesInterface;
+  static createInterface(): ERC2981Interface {
+    return new utils.Interface(_abi) as ERC2981Interface;
   }
   static connect(
     address: string,
     signerOrProvider: Signer | Provider
-  ): ERC2981Royalties {
-    return new Contract(address, _abi, signerOrProvider) as ERC2981Royalties;
+  ): ERC2981 {
+    return new Contract(address, _abi, signerOrProvider) as ERC2981;
   }
 }

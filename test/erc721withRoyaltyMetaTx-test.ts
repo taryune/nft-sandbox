@@ -3,43 +3,17 @@ import { ethers } from 'hardhat';
 import { expect } from 'chai';
 import {
   // eslint-disable-next-line
-  ERC721WithRoyalitiesMetaTx__factory,
-  ERC721WithRoyalitiesMetaTx,
+  ERC721WithRoyaltyMetaTx__factory,
+  ERC721WithRoyaltyMetaTx,
   // eslint-disable-next-line
   MinimalForwarder__factory,
   MinimalForwarder,
 } from '../typechain';
 
-import { createTypedData } from './utils/MetaTransaction';
+import { sign } from './utils/MetaTransaction';
 
-const sign = async (
-  from: string,
-  signer: string,
-  data: string,
-  forwarder: MinimalForwarder,
-  contract: ERC721WithRoyalitiesMetaTx
-) => {
-  const request = {
-    from,
-    to: contract.address,
-    value: 0,
-    gas: 1e6,
-    nonce: (await forwarder.getNonce(signer)).toNumber(),
-    data,
-  };
-  const { chainId } = await ethers.provider.getNetwork();
-  const TypedData = createTypedData(chainId, forwarder.address, request);
-  // sign
-  const signature = await ethers.provider.send('eth_signTypedData_v4', [
-    signer,
-    TypedData,
-  ]);
-
-  return [request, signature];
-};
-
-describe('ERC721RoyalitiesMetaTx', () => {
-  let contract: ERC721WithRoyalitiesMetaTx;
+describe('ERC721RoyaltyMetaTx', () => {
+  let contract: ERC721WithRoyaltyMetaTx;
   let forwarder: MinimalForwarder;
   let signers: any;
 
@@ -51,8 +25,8 @@ describe('ERC721RoyalitiesMetaTx', () => {
       deployer
     );
     const minimalForwarder = await MinimalForwarderFactory.deploy();
-    const ERC721WithRoyalitiesMetaTxFactory = await ethers.getContractFactory(
-      'ERC721WithRoyalitiesMetaTx',
+    const ERC721WithRoyaltyMetaTxFactory = await ethers.getContractFactory(
+      'ERC721WithRoyaltyMetaTx',
       deployer
     );
 
@@ -60,15 +34,14 @@ describe('ERC721RoyalitiesMetaTx', () => {
     const symbol = 'NMK';
     const baseTokenURI = 'http://localhost:3000/';
 
-    const erc721WithRoyalitiesMetaTx =
-      await ERC721WithRoyalitiesMetaTxFactory.deploy(
-        name,
-        symbol,
-        baseTokenURI,
-        minimalForwarder.address
-      );
-    contract = new ERC721WithRoyalitiesMetaTx__factory(deployer).attach(
-      erc721WithRoyalitiesMetaTx.address
+    const erc721WithRoyaltyMetaTx = await ERC721WithRoyaltyMetaTxFactory.deploy(
+      name,
+      symbol,
+      baseTokenURI,
+      minimalForwarder.address
+    );
+    contract = new ERC721WithRoyaltyMetaTx__factory(deployer).attach(
+      erc721WithRoyaltyMetaTx.address
     );
     forwarder = new MinimalForwarder__factory(deployer).attach(
       minimalForwarder.address
@@ -85,13 +58,7 @@ describe('ERC721RoyalitiesMetaTx', () => {
 
   describe('Transfer', async () => {
     beforeEach(async () => {
-      await contract.mint(signers.deployer.address, 'hogehoge');
-      expect(await contract.ownerOf(1)).to.be.equal(signers.deployer.address);
-      await contract.transferFrom(
-        signers.deployer.address,
-        signers.user.address,
-        1
-      );
+      await contract.mint(signers.user.address, 'hogehoge');
       expect(await contract.ownerOf(1)).to.be.equal(signers.user.address);
     });
     it('successful', async () => {
@@ -108,6 +75,7 @@ describe('ERC721RoyalitiesMetaTx', () => {
       const [request, signature] = await sign(
         signers.user.address,
         signers.user.address,
+        0,
         data,
         forwarder,
         contract
@@ -133,6 +101,7 @@ describe('ERC721RoyalitiesMetaTx', () => {
         signers.user.address,
         // invalid signer
         signers.deployer.address,
+        0,
         data,
         forwarder,
         contract
@@ -145,14 +114,7 @@ describe('ERC721RoyalitiesMetaTx', () => {
 
   describe('Burn', async () => {
     beforeEach(async () => {
-      await contract.mint(signers.deployer.address, 'hogehoge');
-      expect(await contract.ownerOf(1)).to.be.equal(signers.deployer.address);
-      // transfer to user
-      await contract.transferFrom(
-        signers.deployer.address,
-        signers.user.address,
-        1
-      );
+      await contract.mint(signers.user.address, 'hogehoge');
       expect(await contract.balanceOf(signers.user.address)).to.be.equal(1);
     });
     it('successful', async () => {
@@ -165,6 +127,7 @@ describe('ERC721RoyalitiesMetaTx', () => {
       const [request, signature] = await sign(
         signers.user.address,
         signers.user.address,
+        0,
         data,
         forwarder,
         contract
@@ -189,6 +152,7 @@ describe('ERC721RoyalitiesMetaTx', () => {
         signers.user.address,
         // invalid signer
         signers.deployer.address,
+        0,
         data,
         forwarder,
         contract
