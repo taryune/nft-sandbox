@@ -10,33 +10,7 @@ import {
   MinimalForwarder,
 } from '../typechain';
 
-import { createTypedData } from './utils/MetaTransaction';
-
-const sign = async (
-  from: string,
-  signer: string,
-  data: string,
-  forwarder: MinimalForwarder,
-  contract: ERC721WithRoyalitiesMetaTx
-) => {
-  const request = {
-    from,
-    to: contract.address,
-    value: 0,
-    gas: 1e6,
-    nonce: (await forwarder.getNonce(signer)).toNumber(),
-    data,
-  };
-  const { chainId } = await ethers.provider.getNetwork();
-  const TypedData = createTypedData(chainId, forwarder.address, request);
-  // sign
-  const signature = await ethers.provider.send('eth_signTypedData_v4', [
-    signer,
-    TypedData,
-  ]);
-
-  return [request, signature];
-};
+import { sign } from './utils/MetaTransaction';
 
 describe('ERC721RoyalitiesMetaTx', () => {
   let contract: ERC721WithRoyalitiesMetaTx;
